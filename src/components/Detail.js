@@ -1,37 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
+import { useParams } from 'react-router-dom';
+import db from '../firebase';
 
 function Detail(){
+    const { id } = useParams();
+    const [movie, setMovie] = useState("https://s3.amazonaws.com/scribblelive-com-prod/wp-content/uploads/sites/4/2020/08/stage-en-error-1020.png");
+
+    useEffect(()=>{
+        db.collection("movies")
+        .doc(id)
+        .get()
+        .then((doc)=>{
+            if(doc.exists){
+                setMovie(doc.data());
+            } else {
+
+            }
+        })
+    }, []);
     return(
         <Container>
-            <Background>
-                <img src="https://i0.wp.com/boingboing.net/wp-content/uploads/2018/12/Screen-Shot-2018-12-18-at-10.08.51-AM.jpg" />
-            </Background>
-            <ImageTitle>
-                <img src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/EF737B93E2F2ABE27C74CBBEB322F18A421E7986129E9989587CEF2295B0447F/scale?width=1344&aspectRatio=1.78&format=png" />
-            </ImageTitle>
-            <Controls>
-                <PlayButton>
-                    <img src="/images/play-icon-black.png" />
-                    <span>PLAY</span>
-                </PlayButton>
-                <TrailerButton>
-                    <img src="/images/play-icon-white.png" />
-                    <span>Trailer</span>
-                </TrailerButton>
-                <AddButton>
-                    <span>+</span>
-                </AddButton>
-                <GroupWatchButton>
-                    <img src="/images/group-icon.png" />
-                </GroupWatchButton>
-            </Controls>
-            <SubTitle>
-                2018 • 7m • Family, Fantasy, Kids, Animation
-            </SubTitle>
-            <Description>
-                1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially 
-            </Description>
+            {movie &&(
+                <>
+                    <Background>
+                        <img src={movie.backgroundImg} />
+                    </Background>
+                    <ImageTitle>
+                        <img src={movie.titleImg} />
+                    </ImageTitle>
+                    <Controls>
+                        <PlayButton>
+                            <img src="/images/play-icon-black.png" />
+                            <span>PLAY</span>
+                        </PlayButton>
+                        <TrailerButton>
+                            <img src="/images/play-icon-white.png" />
+                            <span>Trailer</span>
+                        </TrailerButton>
+                        <AddButton>
+                            <span>+</span>
+                        </AddButton>
+                        <GroupWatchButton>
+                            <img src="/images/group-icon.png" />
+                        </GroupWatchButton>
+                    </Controls>
+                    <SubTitle>
+                        {movie.subTitle}
+                    </SubTitle>
+                    <Description>
+                        {movie.description} 
+                    </Description>
+                </>)
+            }
         </Container>
     )
 };
